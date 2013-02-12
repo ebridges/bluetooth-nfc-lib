@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello example-activity!</string>
-    <string name="app_name">example-activity</string>
+    <string name="hello">Hello World, RfidReaderActivity!</string>
+    <string name="app_name">N330B DEMO</string>
+    <string name="TxtBtnscan">Search N330B</string>
+    <string name="TxtBtnOpenDevice">Open</string>
+    <string name="TxtCloseDevice">Close</string>
+    <string name="TxtBtnReadUid">Read ID</string>
+    <string name="select_device">Select Device</string>
+    <string name="none_found">No Found</string>
+    <string name="scanning">Searching……</string>
+    <string name="TxtBtnReadBlocks">Read Block 1</string>
+    <string name="txtWriteBlocks">Write Block 1</string>
 </resources>

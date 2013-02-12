@@ -1,12 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
+
+    <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/relativeLayout1">
+
+        <Button
+                android:id="@+id/bt_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="@string/TxtBtnscan">
+        </Button>
+
+        <Button
+                android:layout_height="wrap_content"
+                android:text="@string/TxtBtnOpenDevice"
+                android:id="@+id/bt_opendev"
+                android:layout_width="wrap_content"
+                android:layout_toRightOf="@+id/bt_scan"
+                android:layout_alignTop="@+id/bt_scan"
+                android:layout_alignBottom="@+id/bt_scan"/>
+
+        <Spinner
+                android:layout_width="fill_parent"
+                android:id="@+id/listDevices"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/bt_opendev"
+                android:layout_alignTop="@+id/bt_opendev"
+                android:layout_alignBottom="@+id/bt_opendev"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/relativeLayout2"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent">
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/relativeLayout3">
+
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:id="@+id/bt_readuid"
+                android:text="@string/TxtBtnReadUid"/>
+
+        <EditText
+                android:layout_toRightOf="@+id/bt_readuid"
+                android:textColorHint="#238745"
+                android:text=""
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/bt_readuid"
+                android:layout_alignBottom="@+id/bt_readuid"
+                android:id="@+id/TxtUID"
+                android:layout_width="fill_parent"
+                android:inputType="textCapCharacters"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/relativeLayout7"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+        <EditText
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_toRightOf="@+id/textView1"
+                android:id="@+id/editText1"
+                android:text="Key"
+                android:layout_alignTop="@+id/textView1"
+                android:layout_alignBottom="@+id/textView1"
+                android:enabled="true"
+                android:editable="false"
+                android:clickable="false"
+                android:inputType="textCapCharacters"/>
+
+        <EditText
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/editText1"
+                android:maxLength="12"
+                android:capitalize="characters"
+                android:text="FFFFFFFFFFFF"
+                android:layout_alignTop="@+id/editText1"
+                android:layout_alignBottom="@+id/editText1"
+                android:id="@+id/eTxtIdKey"
+                android:layout_width="130dip"
+                android:inputType="textCapCharacters"/>
+
+        <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Key A?"
+                android:layout_toRightOf="@+id/eTxtIdKey"
+                android:layout_alignTop="@+id/eTxtIdKey"
+                android:layout_alignBottom="@+id/eTxtIdKey"
+                android:checked="true"
+                android:id="@+id/id_checkKey"/>
+    </RelativeLayout>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:text="@string/TxtBtnReadBlocks"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_readBlocks"/>
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:text=""
+            android:id="@+id/TxtBlocks"
+            android:layout_height="60dip"
+            android:inputType="textCapCharacters"/>
+
+    <RelativeLayout
+            android:id="@+id/relativeLayout5"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"/>
+
+    <RelativeLayout
+            android:id="@+id/relativeLayout4"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent">
+
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_width="wrap_content"
+                android:id="@+id/btn_writeblocks"
+                android:text="@string/txtWriteBlocks"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/relativeLayout6"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent">
+
+        <EditText
+                android:capitalize="characters"
+                android:text="CAFEBABE"
+                android:layout_alignParentTop="true"
+                android:layout_width="fill_parent"
+                android:id="@+id/ETxtWriteBlocks"
+                android:layout_height="60dip"
+                android:maxLength="32"
+                android:inputType="textCapCharacters"/>
+    </RelativeLayout>
 </LinearLayout>
+
