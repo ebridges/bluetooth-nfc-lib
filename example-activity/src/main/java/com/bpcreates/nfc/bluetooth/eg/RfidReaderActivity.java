@@ -1,4 +1,4 @@
-package com.bpcreates.nfc.bluetooth;
+package com.bpcreates.nfc.bluetooth.eg;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -20,6 +20,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bpcreates.nfc.R;
+import com.bpcreates.nfc.bluetooth.RfidReadListener;
+import com.bpcreates.nfc.bluetooth.RfidReader;
+import com.bpcreates.nfc.bluetooth.Util;
 
 /**
  * Created with IntelliJ IDEA.
@@ -346,7 +349,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                 }
                 if (hexbuf.length >= (hexbuf[0] + 1)) {
                     byte len_in_cmd = hexbuf[0];
-                    if (hexbuf[len_in_cmd] != rfidReader.XORByte(hexbuf, hexbuf[0])) {
+                    if (hexbuf[len_in_cmd] != Util.XORByte(hexbuf, hexbuf[0])) {
                         showMsg("Verification Failed");
                         resetCmd();
                         return;

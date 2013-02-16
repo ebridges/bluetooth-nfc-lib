@@ -9,7 +9,7 @@ import android.os.Message;
  * Date: 2/11/13
  * Time: 8:08 PM
  */
-public class ReaderHandler extends Handler {
+class ReaderHandler extends Handler {
 
     private RfidReadListener listener;
     @Override

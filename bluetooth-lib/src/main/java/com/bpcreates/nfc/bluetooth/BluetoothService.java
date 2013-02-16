@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 
 @SuppressWarnings("UnusedDeclaration")
-public class BluetoothService {
+class BluetoothService {
     private static final String TAG = "N330B.BluetoothService";
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
