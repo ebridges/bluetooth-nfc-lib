@@ -336,27 +336,53 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                 if (hexbuf.length >= (hexbuf[0] + 1)) {
                     byte len_in_cmd = hexbuf[0];
                     if (hexbuf[len_in_cmd] != Util.XORByte(hexbuf, hexbuf[0])) {
-                        showMsg("Verification Failed");
-                        resetReadBuffer();
-                        resetTimer();
+                        handleFailedVerification();
                         return;
                     }
                     byte cmd = hexbuf[1];
 
                     if (cmd == 0x20) {
-                        mEditUID.setText(toMessageString(hexbuf));
+                        handleSuccessfulUidScan(toMessageString(hexbuf));
                     } else if (cmd == 0x41) {
-                        mEditBlocks.setText(toMessageString(hexbuf));
+                        handleSuccessfulRead(toMessageString(hexbuf));
                     } else if (cmd == 0x42) {
-                        showMsg("Block Writing Succeed");
+                        handleSuccessfulWrite(rfid);
                     } else {
-                        showMsg("Error");
+                        handleUnrecognizedCommand(cmd);
                     }
-                    resetReadBuffer();
-                    resetTimer();
                 }
             }
         }
+    }
+
+    private void handleUnrecognizedCommand(byte cmd) {
+        showMsg("Error: unrecognized command: "+ Util.bytesToHex(new byte[]{cmd}));
+        resetReadBuffer();
+        resetTimer();
+    }
+
+    private void handleFailedVerification() {
+        showMsg("Verification Failed");
+        resetReadBuffer();
+        resetTimer();
+    }
+
+    private void handleSuccessfulUidScan(String message) {
+        mEditUID.setText(message);
+        resetReadBuffer();
+        resetTimer();
+    }
+
+    private void handleSuccessfulRead(String message) {
+        mEditBlocks.setText(message);
+        resetReadBuffer();
+        resetTimer();
+    }
+
+    private void handleSuccessfulWrite(String rfid) {
+        showMsg("Block Writing Succeed: "+rfid);
+        resetReadBuffer();
+        resetTimer();
     }
 
     private String toMessageString(byte[] hexbuf) {
