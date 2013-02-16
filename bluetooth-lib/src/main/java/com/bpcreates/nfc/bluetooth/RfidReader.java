@@ -38,15 +38,6 @@ public class RfidReader extends BluetoothService {
         super(handler);
     }
 
-    public byte XORByte(byte[] source,long size)
-    {
-        byte bDest = 0x00;
-        for(int i=0; i<size; i++)
-        {
-            bDest ^= source[i];
-        }
-        return bDest;
-    }
     public void scanRfid()
     {
         if (getState() != STATE_CONNECTED) {
@@ -61,7 +52,7 @@ public class RfidReader extends BluetoothService {
         bCommand[2]=0x03;
         bCommand[3]=0x20;
         bCommand[4]=0x00;
-        bCommand[5]=XORByte(bCommand,iCommandLen-1);
+        bCommand[5]= Util.XORByte(bCommand, iCommandLen - 1);
 
         Log.d(TAG, "SCAN: command array len: " + bCommand.length);
         Log.d(TAG, "SCAN: command array: "+Util.bytesToHex(bCommand));
@@ -89,7 +80,7 @@ public class RfidReader extends BluetoothService {
         send[4] = (byte) 0x00;
         send[5] = (byte) 0x01;
         System.arraycopy(password, 0, send,6, 6);
-        send[12]=XORByte(send,12);
+        send[12]= Util.XORByte(send, 12);
 
         Log.d(TAG, "READ: command array len: " + send.length);
         Log.d(TAG, "READ: command array: "+ Util.bytesToHex(send));
@@ -119,7 +110,7 @@ public class RfidReader extends BluetoothService {
         send[3] = (byte) 0x42;  // command
         send[4] = (byte) 0x08;  // block num
         System.arraycopy(data, 0, send, 5, Util.BLOCK_SIZE);  // data
-        send[send.length-1] = XORByte(send, send.length-1); // checksum
+        send[send.length-1] = Util.XORByte(send, send.length - 1); // checksum
 
         Log.d(TAG, "WRITE: command array len: " + send.length);
         Log.d(TAG, "WRITE: command array: "+ Util.bytesToHex(send));

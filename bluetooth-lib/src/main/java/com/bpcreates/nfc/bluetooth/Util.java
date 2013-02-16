@@ -38,4 +38,14 @@ public class Util {
     }
 
     public static final Integer BLOCK_SIZE = 4;
+
+    public static byte XORByte(byte[] source,long size)
+    {
+        byte bDest = 0x00;
+        for(int i=0; i<size; i++)
+        {
+            bDest ^= source[i];
+        }
+        return bDest;
+    }
 }
