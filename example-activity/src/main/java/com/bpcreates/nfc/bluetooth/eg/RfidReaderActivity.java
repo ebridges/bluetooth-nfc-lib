@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -408,6 +409,14 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
             resetCmd();
             showMsg("Connection Timed out!");
         }
+    }
+
+    public void onMessageToast() {
+        Log.d(TAG, "onMessageToast() called.");
+    }
+
+    public void onMessageWrite(Message msg) {
+        Log.d(TAG, "onMessageWrite() called: "+msg.toString());
     }
 
     public void showMsg(CharSequence text) {

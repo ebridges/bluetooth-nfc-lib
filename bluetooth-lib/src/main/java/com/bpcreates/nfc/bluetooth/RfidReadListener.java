@@ -1,5 +1,7 @@
 package com.bpcreates.nfc.bluetooth;
 
+import android.os.Message;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ebridges
@@ -12,4 +14,8 @@ public interface RfidReadListener {
     public void onNotConnected();
     public void onLinkDevice(String mConnectedDeviceName);
     public void onTimeout();
+
+    public void onMessageToast();
+
+    public void onMessageWrite(Message msg);
 }

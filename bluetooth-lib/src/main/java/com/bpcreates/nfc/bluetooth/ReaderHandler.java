@@ -37,6 +37,7 @@ class ReaderHandler extends Handler {
                 }
                 break;
             case BluetoothService.MESSAGE_WRITE:
+                listener.onMessageWrite(msg);
                 break;
             case BluetoothService.MESSAGE_READ:
                 int len = msg.arg1;
@@ -49,6 +50,7 @@ class ReaderHandler extends Handler {
                 listener.onLinkDevice(mConnectedDeviceName);
                 break;
             case BluetoothService.MESSAGE_TOAST:
+                listener.onMessageToast();
                 break;
             case BluetoothService.MESSAGE_TIMEOUT:
                 listener.onTimeout();
