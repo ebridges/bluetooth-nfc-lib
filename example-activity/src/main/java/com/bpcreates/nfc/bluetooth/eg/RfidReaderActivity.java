@@ -97,6 +97,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                 String address = info.substring(info.length() - 17);
                 Log.d(TAG, "device addr:" + address);
 
+                Log.d(TAG, "connecting device...");
                 rfidReader.connect(address);
             }
         });
@@ -398,6 +399,8 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
 
     public void onLinkDevice(String mConnectedDeviceName) {
         Log.d(TAG, "onLinkDevice() called: " + mConnectedDeviceName);
+        Log.d(TAG, "setting wait mode...");
+        this.rfidReader.setWaitMode();
     }
 
     public void onTimeout() {

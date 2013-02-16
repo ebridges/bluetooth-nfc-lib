@@ -1,6 +1,5 @@
 package com.bpcreates.nfc.bluetooth;
 
-import android.os.Handler;
 import android.util.Log;
 
 import java.util.Timer;
@@ -16,9 +15,10 @@ import java.util.TimerTask;
 public class RfidReader extends BluetoothService {
     private static final String TAG = "N330B.RfidReader";
 
+    private Integer timeout;
+
     public Timer timer =null;
     private class MyTimeTask extends TimerTask {
-
         @Override
         public void run() {
             sendMessage(MESSAGE_TIMEOUT, -1, -1, null);
@@ -27,10 +27,14 @@ public class RfidReader extends BluetoothService {
 
     public RfidReader(RfidReadListener listener) {
         super(new ReaderHandler(listener));
+        this.timeout = Constants.DEFAULT_TIMEOUT_MS;
     }
 
-    public void scanRfid()
-    {
+    public void scanRfid() {
+        if(Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "scanRfid() called.");
+        }
+
         if (getState() != STATE_CONNECTED) {
             return;
         }
@@ -50,15 +54,40 @@ public class RfidReader extends BluetoothService {
 
         write(bCommand);
 
-        if(timer!=null) {
-            timer.cancel();
-            timer=null;
-        }
-        timer = new Timer();
-        timer.schedule(new MyTimeTask(), 2000);
+        waitOnDevice(this.timeout);
     }
-    public void readBlocks(byte[] password)
-    {
+
+    public void setWaitMode() {
+        if(Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "setWaitMode() called.");
+        }
+
+        if (getState() != STATE_CONNECTED) {
+            return;
+        }
+
+        byte[] command=new byte[6];
+        Integer commandLen = 4;
+        command[0]=0x00;
+        command[1]=0x00;
+        command[2]=commandLen.byteValue();
+        command[3]=0x06; // working mode system command
+        command[4]=0x02; // set 'wait' working mode
+        command[5]=0x06; // check code
+
+        Log.d(TAG, "WAITMODE: command array len: " + command.length);
+        Log.d(TAG, "WAITMODE: command array: "+Util.bytesToHex(command));
+
+        write(command);
+
+        waitOnDevice(this.timeout);
+    }
+
+    public void readBlocks(byte[] password) {
+        if(Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "readBlocks() called.");
+        }
+
         if (getState() != STATE_CONNECTED) {
             return;
         }
@@ -78,17 +107,14 @@ public class RfidReader extends BluetoothService {
 
         write(send);
 
-        if(timer!=null)
-        {
-            timer.cancel();
-            timer=null;
-        }
-        timer = new Timer();
-        timer.schedule(new MyTimeTask(), 2000);
+        waitOnDevice(this.timeout);
     }
 
-    public void writeBlocks(byte useKeyA, byte[] password,byte[] data)
-    {
+    public void writeBlocks(byte useKeyA, byte[] password,byte[] data) {
+        if(Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "readBlocks() called.");
+        }
+
         if (getState() != STATE_CONNECTED) {
             return;
         }
@@ -108,12 +134,16 @@ public class RfidReader extends BluetoothService {
 
         write(send);
 
-        if(timer!=null)
-        {
+        waitOnDevice(this.timeout);
+    }
+
+    private void waitOnDevice(long waitLen) {
+        if(timer!=null) {
             timer.cancel();
             timer=null;
         }
         timer = new Timer();
-        timer.schedule(new MyTimeTask(), 2000);
+        timer.schedule(new MyTimeTask(), waitLen);
     }
+
 }
