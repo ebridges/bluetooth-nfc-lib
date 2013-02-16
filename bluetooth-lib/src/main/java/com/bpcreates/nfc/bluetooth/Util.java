@@ -53,7 +53,7 @@ public class Util {
 
     public static String asString(byte[] data, int len) {
         StringBuilder message = new StringBuilder(len);
-        for (int i = 0; i<len && data[i] > 0; i++) {
+        for (int i = 0; i<len; i++) {
             message.append( format("%02X", data[i]) ) ;
         }
         return message.toString();
