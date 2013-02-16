@@ -31,7 +31,7 @@ public class RfidReader extends BluetoothService {
 
     public RfidReader(RfidReadListener listener) {
         super(new ReaderHandler());
-        this.setListener(listener);
+        ((ReaderHandler) super.mHandler).setListener(listener);
     }
 
     private RfidReader(Handler handler) {
@@ -133,10 +133,5 @@ public class RfidReader extends BluetoothService {
         }
         timer = new Timer();
         timer.schedule(new MyTimeTask(), 2000);
-    }
-
-    public void setListener(RfidReadListener listener)
-    {
-        ((ReaderHandler) this.mHandler).setListener(listener);
     }
 }
