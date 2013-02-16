@@ -11,7 +11,15 @@ import android.os.Message;
  */
 class ReaderHandler extends Handler {
 
-    private RfidReadListener listener;
+    private final RfidReadListener listener;
+
+    public ReaderHandler(RfidReadListener listener) {
+        if(null == listener) {
+            throw new IllegalArgumentException("null listener");
+        }
+        this.listener = listener;
+    }
+
     @Override
     public void handleMessage(Message msg) {
 
@@ -64,9 +72,5 @@ class ReaderHandler extends Handler {
                 listener.onTimeout();
                 break;
         }
-    }
-
-    public void setListener(RfidReadListener listener) {
-        this.listener = listener;
     }
 }

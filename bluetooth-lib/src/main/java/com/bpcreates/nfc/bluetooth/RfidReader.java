@@ -25,17 +25,8 @@ public class RfidReader extends BluetoothService {
         }
     }
 
-    public RfidReader() {
-        super(new ReaderHandler());
-    }
-
     public RfidReader(RfidReadListener listener) {
-        super(new ReaderHandler());
-        ((ReaderHandler) super.mHandler).setListener(listener);
-    }
-
-    private RfidReader(Handler handler) {
-        super(handler);
+        super(new ReaderHandler(listener));
     }
 
     public void scanRfid()
