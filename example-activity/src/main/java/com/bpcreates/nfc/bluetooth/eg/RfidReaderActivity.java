@@ -411,14 +411,6 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
         }
     }
 
-    public void onMessageToast() {
-        Log.d(TAG, "onMessageToast() called.");
-    }
-
-    public void onMessageWrite(Message msg) {
-        Log.d(TAG, "onMessageWrite() called: "+msg.toString());
-    }
-
     public void showMsg(CharSequence text) {
         Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
