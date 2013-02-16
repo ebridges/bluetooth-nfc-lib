@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -24,6 +23,8 @@ import com.bpcreates.nfc.R;
 import com.bpcreates.nfc.bluetooth.RfidReadListener;
 import com.bpcreates.nfc.bluetooth.RfidReader;
 import com.bpcreates.nfc.bluetooth.Util;
+
+import static java.lang.String.format;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,8 +46,10 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
     private EditText mEditUID, mEditBlocks, mEditWriteBlocks, mEditKey;
     private CheckBox keyCheckBox;
     private static boolean isConnected = false;
-    private String readMessage = "";
-    public boolean bHaveCmdProcess = false;
+
+    private String readBuffer = "";
+    private boolean lastAA = false;
+
     private byte[] writeBuffer = new byte[Util.BLOCK_SIZE];
     public byte[] password = new byte[6];    //Key value
 
@@ -137,13 +140,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                     writeBuffer[i / 2] |= 0x0f & tmpbuf[i + 1];
                 }
 
-                if (bHaveCmdProcess) {
-                    return;
-                }
-
-                bHaveCmdProcess = true;
-                readMessage = "";
-                lastAA = false;
+                resetReadBuffer();
 
                 if (keyCheckBox.isChecked()) {
                     rfidReader.writeBlocks((byte) 0, password, writeBuffer);
@@ -161,13 +158,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                     return;
                 }
 
-                if (bHaveCmdProcess) {
-                    return;
-                }
-
-                bHaveCmdProcess = true;
-                readMessage = "";
-                lastAA = false;
+                resetReadBuffer();
 
                 rfidReader.scanRfid();
             }
@@ -185,13 +176,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                     return;
                 }
 
-                if (bHaveCmdProcess) {
-                    return;
-                }
-
-                bHaveCmdProcess = true;
-                lastAA = false;
-                readMessage = "";
+                resetReadBuffer();
 
                 rfidReader.readBlocks(password);
             }
@@ -297,43 +282,40 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
         return 1;
     }
 
-    public void resetCmd() {
-        readMessage = "";
+    private void resetReadBuffer() {
+        readBuffer = "";
         lastAA = false;
+    }
+
+    private void resetTimer() {
         if (null != rfidReader.timer) {
             rfidReader.timer.cancel();
         }
-        bHaveCmdProcess = false;
     }
 
-    private boolean lastAA = false;
-
     public void onReadRfid(String rfid, int len) {
-        String tmpString = "";
-        tmpString += rfid;
-
         Log.d(TAG, "Value read from RFID: " + rfid);
 
-        if (tmpString.startsWith("00") && lastAA) {
-            tmpString = tmpString.substring(2);
+        if (rfid.startsWith("00") && lastAA) {
+            rfid = rfid.substring(2);
         }
 
         //noinspection RedundantIfStatement
-        if (tmpString.endsWith("AA")) {
+        if (rfid.endsWith("AA")) {
             lastAA = true;
         } else {
             lastAA = false;
         }
 
-        if (tmpString.contains("AA00")) {
-            tmpString = tmpString.replaceAll("AA00", "AA");
+        if (rfid.contains("AA00")) {
+            rfid = rfid.replaceAll("AA00", "AA");
         }
 
-        readMessage += tmpString;
+        readBuffer += rfid;
 
-        if (readMessage.startsWith("AA55")) {
-            if (readMessage.length() >= 6) {
-                byte[] tmpbuf = readMessage.getBytes();
+        if (readBuffer.startsWith("AA55")) {
+            if (readBuffer.length() >= 6) {
+                byte[] tmpbuf = readBuffer.toString().getBytes();
                 for (int i = 0; i < tmpbuf.length; i++) {
                     if (tmpbuf[i] >= '0' && tmpbuf[i] <= '9') {
                         tmpbuf[i] = (byte) (tmpbuf[i] - '0');
@@ -341,6 +323,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                         tmpbuf[i] = (byte) (tmpbuf[i] - 'A' + 0x0A);
                     }
                 }
+
                 if (tmpbuf.length / 2 < 2)
                     return;
 
@@ -349,36 +332,39 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
                     hexbuf[(i - 4) / 2] = (byte) (0xf0 & (tmpbuf[i] << 4));
                     hexbuf[(i - 4) / 2] |= 0x0f & tmpbuf[i + 1];
                 }
+
                 if (hexbuf.length >= (hexbuf[0] + 1)) {
                     byte len_in_cmd = hexbuf[0];
                     if (hexbuf[len_in_cmd] != Util.XORByte(hexbuf, hexbuf[0])) {
                         showMsg("Verification Failed");
-                        resetCmd();
+                        resetReadBuffer();
+                        resetTimer();
                         return;
                     }
                     byte cmd = hexbuf[1];
 
                     if (cmd == 0x20) {
-                        String string = "";
-                        for (int i = 0; i < hexbuf[0] - 2; i++) {
-                            string += String.format("%02X", hexbuf[i + 2]);
-                        }
-                        mEditUID.setText(string);
+                        mEditUID.setText(toMessageString(hexbuf));
                     } else if (cmd == 0x41) {
-                        String string = "";
-                        for (int i = 0; i < hexbuf[0] - 2; i++) {
-                            string += String.format("%02X", hexbuf[i + 2]);
-                        }
-                        mEditBlocks.setText(string);
+                        mEditBlocks.setText(toMessageString(hexbuf));
                     } else if (cmd == 0x42) {
                         showMsg("Block Writing Succeed");
                     } else {
                         showMsg("Error");
                     }
-                    resetCmd();
+                    resetReadBuffer();
+                    resetTimer();
                 }
             }
         }
+    }
+
+    private String toMessageString(byte[] hexbuf) {
+        StringBuilder message = new StringBuilder(hexbuf[0]-2);
+        for (int i = 0; i < hexbuf[0] - 2; i++) {
+            message.append(format("%02X", hexbuf[i + 2]));
+        }
+        return message.toString();
     }
 
     public void onConnected() {
@@ -406,7 +392,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
 
     public void onTimeout() {
         synchronized (this) {
-            resetCmd();
+            resetReadBuffer();
             showMsg("Connection Timed out!");
         }
     }
