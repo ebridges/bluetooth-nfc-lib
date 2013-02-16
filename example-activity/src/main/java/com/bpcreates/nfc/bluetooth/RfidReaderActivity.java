@@ -28,7 +28,7 @@ import com.bpcreates.nfc.R;
  * Time: 8:59 PM
  */
 public class RfidReaderActivity extends Activity implements RfidReadListener {
-    private static final String TAG = "N330B.RfidReaderActivity";
+    private static final String TAG = "N330B.RfidReader";
 
     private static final String READERNAME1 = "rs9a-nxp-reader";
     private static final String READERNAME2 = "RS-9BTRFIDReader";
