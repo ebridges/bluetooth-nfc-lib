@@ -10,7 +10,6 @@ import android.os.Message;
  * Time: 8:08 PM
  */
 class ReaderHandler extends Handler {
-
     private final RfidReadListener listener;
 
     public ReaderHandler(RfidReadListener listener) {
@@ -22,10 +21,7 @@ class ReaderHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-
-        switch (msg.what)
-        {
-            // Status Changed
+        switch (msg.what) {
             case BluetoothService.MESSAGE_STATE_CHANGE:
                 switch (msg.arg1)
                 {
@@ -40,27 +36,13 @@ class ReaderHandler extends Handler {
                         break;
                 }
                 break;
-            // Send
             case BluetoothService.MESSAGE_WRITE:
                 break;
-
-            // Receive
             case BluetoothService.MESSAGE_READ:
-                if (listener != null)
-                {
-                    int len = msg.arg1;
-                    byte[] tmpBuf = (byte[]) msg.obj;
-                    byte[] readBuf= new byte[len];
-
-                    System.arraycopy(tmpBuf,0,readBuf,0,len);
-                    String readMessage ="";
-
-                    for (int i = 0; i < len; i++)
-                    {
-                        readMessage += String.format("%02X", readBuf[i]);
-                    }
-                    listener.onReadRfid(readMessage,len);
-                }
+                int len = msg.arg1;
+                byte[] data = (byte[]) msg.obj;
+                String message = Util.asString(data, len);
+                listener.onReadRfid(message,len);
                 break;
             case BluetoothService.MESSAGE_DEVICE_NAME:
                 String mConnectedDeviceName = msg.getData().getString(BluetoothService.DEVICE_NAME);

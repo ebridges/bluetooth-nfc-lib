@@ -1,5 +1,7 @@
 package com.bpcreates.nfc.bluetooth;
 
+import static java.lang.String.format;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ebridges
@@ -47,5 +49,13 @@ public class Util {
             bDest ^= source[i];
         }
         return bDest;
+    }
+
+    public static String asString(byte[] data, int len) {
+        StringBuilder message = new StringBuilder(len);
+        for (int i = 0; i<len && data[i] > 0; i++) {
+            message.append( format("%02X", data[i]) ) ;
+        }
+        return message.toString();
     }
 }
