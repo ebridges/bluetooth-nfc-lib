@@ -20,6 +20,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bpcreates.nfc.R;
+import com.bpcreates.nfc.bluetooth.ContestStatusInfo;
+import com.bpcreates.nfc.bluetooth.ContestStatusService;
 import com.bpcreates.nfc.bluetooth.RfidReadListener;
 import com.bpcreates.nfc.bluetooth.RfidReader;
 import com.bpcreates.nfc.bluetooth.Util;
@@ -43,6 +45,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
     private ArrayAdapter<String> newDevicesArrayAdapter;
     private Spinner devicesList;
     private RfidReader rfidReader = new RfidReader(this);
+    private ContestStatusService statusService = new ContestStatusService(this.rfidReader);
     private EditText mEditUID, mEditBlocks, mEditWriteBlocks, mEditKey;
     private CheckBox keyCheckBox;
     private static boolean isConnected = false;
@@ -142,11 +145,13 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
 
                 resetReadBuffer();
 
-                if (keyCheckBox.isChecked()) {
-                    rfidReader.writeBlocks((byte) 0, password, writeBuffer);
-                } else {
-                    rfidReader.writeBlocks((byte) 1, password, writeBuffer);
-                }
+
+                ContestStatusInfo info = new ContestStatusInfo(5, "2125551212");
+                statusService.writeContestStatus(info);
+                /*
+                byte blockNum = 4;
+                rfidReader.writeBlocks(blockNum, writeBuffer);
+                */
             }
         });
 
@@ -178,7 +183,8 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
 
                 resetReadBuffer();
 
-                rfidReader.readBlocks(password);
+                byte blockNum = 4;
+                rfidReader.readBlocks(blockNum);
             }
         });
 

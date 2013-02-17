@@ -9,6 +9,10 @@ import static java.lang.String.format;
  * Time: 8:31 PM
  */
 public class Util {
+    public static boolean isEmpty(String val) {
+        return null == val || val.trim().isEmpty();
+    }
+
     public static int str2hex(String str, byte[] desbuf) {
         byte[] tmpbuf = str.getBytes();
         for (int i = 0; i < tmpbuf.length; i++) {
@@ -57,5 +61,25 @@ public class Util {
             message.append( format("%02X", data[i]) ) ;
         }
         return message.toString();
+    }
+
+    public static byte[] toByteArray(int data) {
+        return new byte[] {
+                (byte)((data >> 24) & 0xff),
+                (byte)((data >> 16) & 0xff),
+                (byte)((data >> 8) & 0xff),
+                (byte)((data >> 0) & 0xff),
+        };
+    }
+
+
+    public static int toInt(byte[] data) {
+        if (data == null || data.length != 4) return 0x0;
+        return
+            (0xff & data[0]) << 24  |
+            (0xff & data[1]) << 16  |
+            (0xff & data[2]) << 8   |
+            (0xff & data[3]) << 0
+        ;
     }
 }

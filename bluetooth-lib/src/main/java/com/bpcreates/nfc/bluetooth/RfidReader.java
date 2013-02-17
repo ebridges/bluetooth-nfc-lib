@@ -50,7 +50,7 @@ public class RfidReader extends BluetoothService {
         bCommand[5]= Util.XORByte(bCommand, iCommandLen - 1);
 
         Log.d(TAG, "SCAN: command array len: " + bCommand.length);
-        Log.d(TAG, "SCAN: command array: "+Util.bytesToHex(bCommand));
+        Log.d(TAG, "SCAN: command array: " + Util.bytesToHex(bCommand));
 
         write(bCommand);
 
@@ -76,14 +76,14 @@ public class RfidReader extends BluetoothService {
         command[5]=0x06; // check code
 
         Log.d(TAG, "WAITMODE: command array len: " + command.length);
-        Log.d(TAG, "WAITMODE: command array: "+Util.bytesToHex(command));
+        Log.d(TAG, "WAITMODE: command array: " + Util.bytesToHex(command));
 
         write(command);
 
         waitOnDevice(this.timeout);
     }
 
-    public void readBlocks(byte[] password) {
+    public void readBlocks(byte blockNum) {
         if(Log.isLoggable(TAG, Log.DEBUG)) {
             Log.d(TAG, "readBlocks() called.");
         }
@@ -92,25 +92,22 @@ public class RfidReader extends BluetoothService {
             return;
         }
 
-        byte[] send = new byte[7+6];
-        send[0] = (byte) 0x00;
-        send[1] = (byte) 0x00;
-        send[2] = (byte) 0x0A;
-        send[3] = (byte) 0x41;
-        send[4] = (byte) 0x00;
-        send[5] = (byte) 0x01;
-        System.arraycopy(password, 0, send,6, 6);
-        send[12]= Util.XORByte(send, 12);
+        byte[] send = new byte[6];
+        send[0] = (byte) 0x00; // prefix
+        send[1] = (byte) 0x00; // prefix
+        send[2] = (byte) 0x03; // length ??
+        send[3] = (byte) 0x41; // command
+        send[4] = blockNum; // block num
+        send[send.length-1] = Util.XORByte(send, send.length - 1); // checksum
 
         Log.d(TAG, "READ: command array len: " + send.length);
         Log.d(TAG, "READ: command array: "+ Util.bytesToHex(send));
 
         write(send);
-
         waitOnDevice(this.timeout);
     }
 
-    public void writeBlocks(byte useKeyA, byte[] password,byte[] data) {
+    public void writeBlocks(byte blockNum, byte[] data) {
         if(Log.isLoggable(TAG, Log.DEBUG)) {
             Log.d(TAG, "readBlocks() called.");
         }
@@ -125,12 +122,12 @@ public class RfidReader extends BluetoothService {
         send[1] = (byte) 0x00;  // prefix
         send[2] = (byte) 0x07;  // length
         send[3] = (byte) 0x42;  // command
-        send[4] = (byte) 0x08;  // block num
+        send[4] = blockNum;  // block num
         System.arraycopy(data, 0, send, 5, Util.BLOCK_SIZE);  // data
         send[send.length-1] = Util.XORByte(send, send.length - 1); // checksum
 
         Log.d(TAG, "WRITE: command array len: " + send.length);
-        Log.d(TAG, "WRITE: command array: "+ Util.bytesToHex(send));
+        Log.d(TAG, "WRITE: command array: " + Util.bytesToHex(send));
 
         write(send);
 
