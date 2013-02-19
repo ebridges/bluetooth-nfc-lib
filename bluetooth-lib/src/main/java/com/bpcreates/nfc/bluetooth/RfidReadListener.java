@@ -14,4 +14,5 @@ public interface RfidReadListener {
     public void onNotConnected();
     public void onLinkDevice(String mConnectedDeviceName);
     public void onTimeout();
+    public void onConnectionLost();
 }

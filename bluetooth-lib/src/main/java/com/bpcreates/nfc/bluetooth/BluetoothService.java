@@ -31,6 +31,7 @@ class BluetoothService {
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_TIMEOUT = 6;
+    public static final int MESSAGE_CONNECTION_LOST = 7;
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
@@ -188,10 +189,9 @@ class BluetoothService {
         mHandler.sendMessage(msg);
     }
 
-    private void connectionLost()
-    {
+    private void connectionLost() {
         setState(STATE_LISTEN);
-        Message msg = mHandler.obtainMessage(MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(MESSAGE_CONNECTION_LOST);
         Bundle bundle = new Bundle();
         bundle.putString(TOAST, "Device connection was lost");
         msg.setData(bundle);
@@ -359,7 +359,9 @@ class BluetoothService {
                 catch (IOException e)
                 {
                     Log.e(TAG, "disconnected", e);
-                    connectionLost();
+                    if(e.getMessage() != null && e.getMessage().contains("connection abort")) {
+                        connectionLost();
+                    }
                     break;
                 }
             }

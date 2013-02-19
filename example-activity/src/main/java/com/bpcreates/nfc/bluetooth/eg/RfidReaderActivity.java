@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bpcreates.nfc.R;
+import com.bpcreates.nfc.bluetooth.Constants;
 import com.bpcreates.nfc.bluetooth.ContestStatusInfo;
 import com.bpcreates.nfc.bluetooth.ContestStatusService;
 import com.bpcreates.nfc.bluetooth.RfidReadListener;
@@ -35,7 +36,7 @@ import static java.lang.String.format;
  * Time: 8:59 PM
  */
 public class RfidReaderActivity extends Activity implements RfidReadListener {
-    private static final String TAG = "N330B.RfidReader";
+    private static final String TAG = "N330B.RfidReaderActvty";
 
     private static final String READERNAME1 = "rs9a-nxp-reader";
     private static final String READERNAME2 = "RS-9BTRFIDReader";
@@ -88,24 +89,7 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
         Button openButton = (Button) findViewById(R.id.bt_opendev);
         openButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (isConnected) {
-                    showMsg("Device is ON already");
-                    return;
-                }
-
-                bluetoothAdapter.cancelDiscovery();
-                if (-1 == devicesList.getSelectedItemPosition()) {
-                    showMsg("Select the device");
-                    return;
-                }
-
-                // Get the device MAC address, which is the last 17 chars
-                String info = devicesList.getSelectedItem().toString();
-                String address = info.substring(info.length() - 17);
-                Log.d(TAG, "device addr:" + address);
-
-                Log.d(TAG, "connecting device...");
-                rfidReader.connect(address);
+                openConnection();
             }
         });
 
@@ -192,6 +176,27 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
         registerReceiver(mReceiver, filter);
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter);
+    }
+
+    private void openConnection() {
+        if (isConnected) {
+            showMsg("Device is ON already");
+            return;
+        }
+
+        bluetoothAdapter.cancelDiscovery();
+        if (-1 == devicesList.getSelectedItemPosition()) {
+            showMsg("Select the device");
+            return;
+        }
+
+        // Get the device MAC address, which is the last 17 chars
+        String info = devicesList.getSelectedItem().toString();
+        String address = info.substring(info.length() - 17);
+        Log.d(TAG, "device addr:" + address);
+
+        Log.d(TAG, "connecting device...");
+        rfidReader.connect(address);
     }
 
     private static String lastString = "";
@@ -401,11 +406,34 @@ public class RfidReaderActivity extends Activity implements RfidReadListener {
 
     public void onConnected() {
         isConnected = true;
+        retryCount=0;
         Button scanButton = (Button) findViewById(R.id.bt_scan);
         scanButton.setEnabled(false);
         Button openButton = (Button) findViewById(R.id.bt_opendev);
         openButton.setEnabled(false);
         showMsg("Connected!");
+    }
+
+    private static final Integer RETRY_ATTEMPTS=10;
+    private int retryCount = 0;
+
+    public void onConnectionLost() {
+        retryCount++;
+        while(!isConnected || retryCount < RETRY_ATTEMPTS) {
+            Runnable r = new Runnable() {
+                public void run() {
+                    openConnection();
+                }
+            };
+            Thread t = new Thread(r);
+            t.start();
+
+            try {
+                Thread.currentThread().sleep(Constants.DEFAULT_TIMEOUT_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void onNotConnected() {

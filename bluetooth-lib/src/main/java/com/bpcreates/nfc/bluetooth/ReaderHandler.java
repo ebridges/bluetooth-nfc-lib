@@ -53,6 +53,9 @@ class ReaderHandler extends Handler {
             case BluetoothService.MESSAGE_TIMEOUT:
                 listener.onTimeout();
                 break;
+            case BluetoothService.MESSAGE_CONNECTION_LOST:
+                listener.onConnectionLost();
+                break;
         }
     }
 }
